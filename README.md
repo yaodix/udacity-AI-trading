@@ -343,7 +343,7 @@ Planned improvements and additions:
 - **Advanced ML Models**: Transformer-based models, ensemble methods
 - **Risk Analytics**: VaR, CVaR, stress testing
 - **Web Interface**: Dashboard for strategy monitoring
-- **API Integration**:Broker APIs for automated execution 
+- **API Integration**:Broker APIs for automated execution
 
 ---
 

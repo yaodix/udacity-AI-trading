@@ -49,9 +49,12 @@ def compute_returns(historical_prices, list_of_momentums):
     f_returns = f_returns.shift(-forecast_horizon)
     # Convert the result to a DataFrame
     f_returns = pd.DataFrame(f_returns.unstack())
+    # f_returns.to_csv("f_returns.csv")
     # Name the column based on the forecast horizon
     name = "F_" + str(forecast_horizon) + "_d_returns"
     f_returns.rename(columns={0: name}, inplace=True)
+    f_returns.index.names = ['Ticker', 'Date']
+    
     # Initialize total_returns with forward returns
     total_returns = f_returns
     
@@ -64,7 +67,8 @@ def compute_returns(historical_prices, list_of_momentums):
         name = str(i) + "_d_returns"        
         feature.rename(columns={0: name}, inplace=True)
         # Rename columns and reset index
-        feature.rename(columns={0: name, 'level_0': 'Ticker'}, inplace=True)
+        # feature.rename(columns={0: name, 'level_0': 'Ticker'}, inplace=True)
+        feature.index.names = ['Ticker', 'Date']
         # Merge computed feature returns with total_returns based on Ticker and Date
         total_returns = pd.merge(total_returns, feature, left_index=True, right_index=True,how='outer')
     
@@ -101,7 +105,7 @@ def compute_BM_Perf(total_returns):  # benchmark performance
     number_of_years = len(daily_mean) / 252  # Assuming 252 trading days in a year
     
     ending_value    = cum_returns['SP&500'].iloc[-1]
-    beginning_value = cum_returns['SP&500'].iloc[1]
+    beginning_value = cum_returns['SP&500'].iloc[0]
     
     # Compute the Compound Annual Growth Rate (CAGR)
     ratio = ending_value/beginning_value
@@ -279,8 +283,12 @@ def plot_optimal_cluster_point(sse, k_range):
     plt.show()
     
     
-    
-if __name__ == '__main__':
-    hist_data = create_hist_prices()
-    # save the historical prices to a csv file
-    hist_data.to_csv('historical_prices.csv')
+def load_historical_prices(file_path, start_date = '2000-01-01', end_date = '2024-05-01'):
+    """Load historical prices from a CSV file.
+
+    Returns:
+        DataFrame of historical prices with 'Date' as the index.
+    """
+    hist_data = pd.read_csv(file_path, index_col='Date', parse_dates=True)
+    return hist_data.loc[start_date:end_date]
+
